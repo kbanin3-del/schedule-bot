@@ -1,0 +1,19 @@
+name: schedule-bot
+
+on:
+  schedule:
+    - cron: "0 0 * * 1-5"       # утренняя сводка в 07:00 по Красноярску (пн-пт)
+    - cron: "*/5 0-7 * * 1-5"   # проверка напоминаний об уроках каждые 5 минут
+  workflow_dispatch:            # кнопка ручного запуска для проверки
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Отправить сообщение
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          SCHEDULE_CRON: ${{ github.event.schedule }}
+        run: python3 send.py
